@@ -1,0 +1,531 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>114年6月 綜合所得稅結算申報 志工排班</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@400;600;700&family=Noto+Sans+TC:wght@300;400;500&display=swap');
+
+    :root {
+      --ink: #1a1a2e;
+      --paper: #f7f4ee;
+      --accent: #8b1a1a;
+      --accent-light: #c0392b;
+      --gold: #c9a84c;
+      --taken: #6b7280;
+      --available: #1a5c1a;
+      --mine: #1a3a8b;
+      --border: #c8bfa8;
+      --header-bg: #2c2c3e;
+      --week-bg: #e8e2d4;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'Noto Sans TC', sans-serif;
+      background: var(--paper);
+      color: var(--ink);
+      min-height: 100vh;
+    }
+
+    /* ── HEADER ── */
+    header {
+      background: var(--header-bg);
+      color: #f0ece3;
+      padding: 24px 32px 20px;
+      border-bottom: 3px solid var(--gold);
+      text-align: center;
+    }
+    header .subtitle {
+      font-size: 11px;
+      letter-spacing: 4px;
+      text-transform: uppercase;
+      color: var(--gold);
+      margin-bottom: 8px;
+      font-weight: 300;
+    }
+    header h1 {
+      font-family: 'Noto Serif TC', serif;
+      font-size: clamp(16px, 3vw, 24px);
+      font-weight: 700;
+      letter-spacing: 2px;
+      line-height: 1.4;
+    }
+
+    /* ── LOGIN PANEL ── */
+    #login-panel {
+      max-width: 480px;
+      margin: 40px auto;
+      background: #fff;
+      border: 1px solid var(--border);
+      border-top: 4px solid var(--accent);
+      padding: 32px;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+    }
+    #login-panel h2 {
+      font-family: 'Noto Serif TC', serif;
+      font-size: 18px;
+      margin-bottom: 8px;
+      color: var(--accent);
+    }
+    #login-panel p {
+      font-size: 13px;
+      color: #666;
+      margin-bottom: 24px;
+      line-height: 1.6;
+    }
+    .input-row { display: flex; gap: 10px; }
+    #name-input {
+      flex: 1;
+      padding: 12px 16px;
+      border: 1.5px solid var(--border);
+      font-family: 'Noto Sans TC', sans-serif;
+      font-size: 15px;
+      color: var(--ink);
+      background: var(--paper);
+      transition: border-color 0.2s;
+    }
+    #name-input:focus { outline: none; border-color: var(--accent); }
+    #login-btn {
+      padding: 12px 24px;
+      background: var(--accent);
+      color: #fff;
+      border: none;
+      font-family: 'Noto Sans TC', sans-serif;
+      font-size: 14px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: background 0.2s;
+      white-space: nowrap;
+    }
+    #login-btn:hover { background: var(--accent-light); }
+
+    /* ── MAIN APP ── */
+    #app { display: none; padding: 24px 16px 60px; max-width: 1100px; margin: 0 auto; }
+
+    /* STATUS BAR */
+    #status-bar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background: var(--header-bg);
+      color: #f0ece3;
+      padding: 12px 20px;
+      margin-bottom: 20px;
+      border-left: 4px solid var(--gold);
+      font-size: 13px;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+    #status-bar .user-info { font-weight: 500; }
+    #status-bar .count-info { color: var(--gold); }
+    #logout-btn {
+      background: transparent;
+      border: 1px solid #666;
+      color: #ccc;
+      padding: 4px 12px;
+      cursor: pointer;
+      font-size: 12px;
+      font-family: 'Noto Sans TC', sans-serif;
+      transition: all 0.2s;
+    }
+    #logout-btn:hover { border-color: #ccc; color: #fff; }
+
+    /* LEGEND */
+    .legend {
+      display: flex;
+      gap: 16px;
+      flex-wrap: wrap;
+      margin-bottom: 16px;
+      font-size: 12px;
+    }
+    .legend-item { display: flex; align-items: center; gap: 6px; }
+    .legend-dot { width: 14px; height: 14px; border-radius: 2px; flex-shrink: 0; }
+    .dot-available { background: #d4edda; border: 1px solid var(--available); }
+    .dot-mine { background: #d0dff7; border: 1px solid var(--mine); }
+    .dot-taken { background: #e5e7eb; border: 1px solid var(--taken); }
+
+    /* NOTICE */
+    .notice {
+      background: #fffbeb;
+      border: 1px solid #f6d860;
+      border-left: 4px solid var(--gold);
+      padding: 12px 16px;
+      font-size: 12px;
+      line-height: 1.8;
+      margin-bottom: 20px;
+      color: #555;
+    }
+    .notice strong { color: var(--accent); }
+
+    /* REFRESH BTN */
+    #refresh-btn {
+      display: block;
+      margin: 0 0 16px auto;
+      padding: 8px 18px;
+      background: transparent;
+      border: 1.5px solid var(--accent);
+      color: var(--accent);
+      font-family: 'Noto Sans TC', sans-serif;
+      font-size: 13px;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    #refresh-btn:hover { background: var(--accent); color: #fff; }
+    #refresh-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+
+    /* ── SCHEDULE TABLE ── */
+    .schedule-wrapper { overflow-x: auto; }
+    table { width: 100%; border-collapse: collapse; font-size: 13px; min-width: 640px; }
+    th {
+      background: var(--header-bg); color: #f0ece3; padding: 10px 8px;
+      font-weight: 500; letter-spacing: 1px; font-size: 12px;
+      border: 1px solid #444; text-align: center;
+    }
+    td { border: 1px solid var(--border); text-align: center; padding: 0; vertical-align: middle; }
+    .week-header td {
+      background: var(--week-bg); font-weight: 600; font-size: 13px;
+      padding: 8px; letter-spacing: 1px; color: var(--accent);
+      font-family: 'Noto Serif TC', serif;
+    }
+    .row-label { background: var(--week-bg); font-weight: 500; padding: 10px 8px; color: #555; font-size: 12px; width: 48px; }
+    .day-cell { background: #f9f7f3; font-weight: 500; padding: 8px 4px; font-size: 12px; color: #444; width: 100px; }
+    .slots-cell { padding: 6px; }
+    .slots-inner { display: flex; gap: 5px; justify-content: center; flex-wrap: wrap; }
+    .empty-cell { background: #f0ede6; }
+
+    /* ── SLOT BUTTONS ── */
+    .slot-btn {
+      display: inline-flex; flex-direction: column; align-items: center; justify-content: center;
+      width: 72px; min-height: 56px; padding: 6px 4px; border: 1.5px solid;
+      cursor: pointer; font-family: 'Noto Sans TC', sans-serif; transition: all 0.15s;
+      background: #fff; position: relative;
+    }
+    .slot-number { font-size: 17px; font-weight: 700; line-height: 1; margin-bottom: 2px; }
+    .slot-name { font-size: 10px; line-height: 1.2; max-width: 68px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+
+    /* Available */
+    .slot-btn.available { border-color: var(--available); background: #f0fff0; color: var(--available); }
+    .slot-btn.available:hover { background: var(--available); color: #fff; transform: translateY(-1px); box-shadow: 0 3px 8px rgba(26,92,26,0.3); }
+
+    /* Mine */
+    .slot-btn.mine { border-color: var(--mine); background: #eef3ff; color: var(--mine); cursor: default;}
+    .slot-btn.mine::after { content: '✓ 我的'; font-size: 9px; color: var(--mine); position: absolute; bottom: 3px; right: 3px; }
+
+    /* Taken */
+    .slot-btn.taken { border-color: #d1d5db; background: #f3f4f6; color: var(--taken); cursor: not-allowed; }
+
+    /* LOADING */
+    #loading { text-align: center; padding: 60px 20px; color: var(--mine); font-size: 16px; font-weight: bold; }
+
+/* ── RWD 行動裝置優化 ── */
+    @media (max-width: 768px) {
+      /* 縮小標題與登入框 */
+      header { padding: 16px 10px; }
+      header h1 { font-size: 18px; }
+      #login-panel { margin: 15px; padding: 20px 15px; }
+
+      /* 將狀態列改為多行排列，按鈕變大好點擊 */
+      #status-bar { flex-direction: column; align-items: stretch; gap: 10px; text-align: center; }
+      #logout-btn { padding: 8px; font-size: 14px; margin-top: 5px; }
+
+      /* 解除表格的最小寬度限制，讓它適應手機螢幕 */
+      table { min-width: 100%; }
+      
+      /* 縮小表頭與日期字體 */
+      th { padding: 6px 2px; font-size: 12px; }
+      .day-cell { padding: 4px 2px; font-size: 11px; width: auto; }
+      /* 手機版隱藏「(週一)」等字眼節省空間，因為表頭已經有寫了 */
+      .day-cell small { display: none; } 
+      
+      /* ★ 關鍵技巧：將「上午/下午」變直書，大幅節省橫向空間 */
+      .row-label { 
+        width: 24px; 
+        writing-mode: vertical-lr; 
+        letter-spacing: 4px; 
+        padding: 4px;
+        font-size: 12px;
+      } 
+      
+      /* 縮小梯次按鈕，確保手機上一排絕對塞得下 */
+      .slots-cell { padding: 4px 2px; }
+      .slot-btn { width: 44px; min-height: 48px; padding: 4px 0; }
+      .slot-number { font-size: 14px; margin-bottom: 2px; }
+      .slot-name { font-size: 9px; max-width: 40px; }
+      
+      /* 顏色標示區塊置中 */
+      .legend { justify-content: center; gap: 10px; }
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <div class="subtitle">114年度 · 南區國稅局臺南分局</div>
+  <h1>綜合所得稅結算申報<br>稅務志工排班系統</h1>
+</header>
+
+<div id="login-panel">
+  <h2>志工登入</h2>
+  <p>請輸入您的姓名後按確認，即可查看並選取您的值班梯次。<br>每位志工最多可選 <strong>2個梯次</strong>。</p>
+  <div class="input-row">
+    <input type="text" id="name-input" placeholder="請輸入姓名" maxlength="10" autocomplete="off">
+    <button id="login-btn" onclick="login()">確認登入</button>
+  </div>
+</div>
+
+<div id="app">
+  <div id="status-bar">
+    <span class="user-info">目前使用者：<strong id="display-name"></strong></span>
+    <span class="count-info" id="count-display">已選 0 / 2 個梯次</span>
+    <button id="logout-btn" onclick="logout()">更換使用者</button>
+  </div>
+
+  <div class="notice">
+    <strong>備註：</strong>
+    ① 地下1樓值班人員不得與原1樓及3樓班次為同1天，即每天僅能值班1樓次。<br>
+    ② 6月服務時間：週一至週五，上午 8:00–11:00 及 9:00–12:00；下午 2:00–5:00，每班3小時。<br>
+    ③ 如因故無法按排定時間值班，應先商請志工換（代）班。
+  </div>
+
+  <div class="legend">
+    <div class="legend-item"><div class="legend-dot dot-available"></div><span>可選（點擊選取）</span></div>
+    <div class="legend-item"><div class="legend-dot dot-mine"></div><span>您已選取</span></div>
+    <div class="legend-item"><div class="legend-dot dot-taken"></div><span>已被選走</span></div>
+  </div>
+
+  <button id="refresh-btn" onclick="loadData()">重新整理資料</button>
+
+  <div id="loading">載入中，請稍候...</div>
+
+  <div class="schedule-wrapper" id="schedule-wrapper" style="display:none">
+    <table id="schedule-table"></table>
+  </div>
+</div>
+
+<script>
+// ！！！請將這裡替換成你上一輪部署的 Apps Script 網址！！！
+const API_URL = 'https://script.google.com/macros/s/AKfycbyIV3DnWgNpMKYVjyRpn4oMdgEPuLbIjYOLq031qW-ZqDsy1dZocQOCNrHZPsBOGnsq/exec'; 
+
+const MAX_SLOTS = 2;
+let currentUser = '';
+let slotData = {}; // 儲存目前的排班狀況，格式如：{ "1": "王小明", "2": "吳淑玲" }
+
+// ── 排班結構（自動生成表格用）──
+const SCHEDULE_DATA = [
+  { label: '第一週', dates: [
+    { date: '6月02日', day: '一', am: [], pm: [] },
+    { date: '6月03日', day: '二', am: [1, 2], pm: [3] },
+    { date: '6月04日', day: '三', am: [4], pm: [5] },
+    { date: '6月05日', day: '四', am: [6], pm: [7] },
+    { date: '6月06日', day: '五', am: [8, 9], pm: [10] },
+  ]},
+  { label: '第二週', dates: [
+    { date: '6月09日', day: '一', am: [11, 12], pm: [13] },
+    { date: '6月10日', day: '二', am: [14, 15], pm: [16] },
+    { date: '6月11日', day: '三', am: [17, 18], pm: [19] },
+    { date: '6月12日', day: '四', am: [20, 21], pm: [22] },
+    { date: '6月13日', day: '五', am: [23, 24], pm: [25] },
+  ]},
+  { label: '第三週', dates: [
+    { date: '6月16日', day: '一', am: [26, 27], pm: [28] },
+    { date: '6月17日', day: '二', am: [29, 30], pm: [31] },
+    { date: '6月18日', day: '三', am: [32, 33], pm: [34] },
+    { date: '6月19日', day: '四', am: [35, 36], pm: [37] },
+    { date: '6月20日', day: '五', am: [38, 39], pm: [40] },
+  ]},
+  { label: '第四週', dates: [
+    { date: '6月23日', day: '一', am: [41, 42], pm: [43] },
+    { date: '6月24日', day: '二', am: [44, 45], pm: [46] },
+    { date: '6月25日', day: '三', am: [47, 48], pm: [49] },
+    { date: '6月26日', day: '四', am: [50, 51], pm: [52] },
+    { date: '6月27日', day: '五', am: [53, 54], pm: [55] },
+  ]},
+  { label: '第五週', dates: [
+    { date: '6月30日', day: '一', am: [56, 57], pm: [58] },
+  ]},
+];
+
+// 登入邏輯
+function login() {
+  const name = document.getElementById('name-input').value.trim();
+  if (!name) { alert('請輸入姓名！'); return; }
+  
+  currentUser = name;
+  document.getElementById('display-name').textContent = name;
+  document.getElementById('login-panel').style.display = 'none';
+  document.getElementById('app').style.display = 'block';
+  
+  loadData();
+}
+
+// 登出邏輯
+function logout() {
+  currentUser = '';
+  document.getElementById('app').style.display = 'none';
+  document.getElementById('login-panel').style.display = 'block';
+  document.getElementById('name-input').value = '';
+}
+
+// 讀取遠端資料
+async function loadData() {
+  const btn = document.getElementById('refresh-btn');
+  btn.disabled = true;
+  btn.textContent = '讀取中...';
+  document.getElementById('loading').style.display = 'block';
+  document.getElementById('schedule-wrapper').style.display = 'none';
+
+  try {
+    const response = await fetch(API_URL);
+    const data = await response.json(); // 取得 [{slot: "1", name: "王小明"}, ...]
+    
+    // 將陣列轉換成物件格式方便查詢
+    slotData = {};
+    data.forEach(item => {
+      slotData[item.slot] = item.name;
+    });
+
+    renderTable(); // 重新繪製表格
+    updateCountDisplay(); // 更新選取數量
+
+  } catch (error) {
+    alert("讀取班表失敗，請確定 API 網址是否正確並重新整理網頁。");
+    console.error(error);
+  }
+
+  document.getElementById('loading').style.display = 'none';
+  document.getElementById('schedule-wrapper').style.display = 'block';
+  btn.disabled = false;
+  btn.textContent = '重新整理資料';
+}
+
+// 點擊梯次進行認領
+async function bookSlot(slotId) {
+  if (!confirm(`確定要以「${currentUser}」的身份認領【梯次 ${slotId}】嗎？`)) return;
+
+  document.getElementById('loading').style.display = 'block';
+  document.getElementById('schedule-wrapper').style.display = 'none';
+
+  const formData = new URLSearchParams();
+  formData.append('slot', slotId);
+  formData.append('name', currentUser);
+
+  try {
+    const response = await fetch(API_URL, {
+      method: 'POST',
+      body: formData,
+      headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
+    });
+    const result = await response.json();
+
+    if (result.status === 'success') {
+      alert("報名成功！");
+    } else {
+      alert("報名失敗：" + result.message);
+    }
+  } catch (error) {
+    alert("網路連線錯誤，請稍後再試。");
+  }
+  
+  loadData(); // 不管成功或失敗，都重新拉取最新狀態
+}
+
+// 計算並顯示目前使用者選了幾個梯次
+function updateCountDisplay() {
+  const mySlotsCount = Object.values(slotData).filter(name => name === currentUser).length;
+  document.getElementById('count-display').textContent = `已選 ${mySlotsCount} / ${MAX_SLOTS} 個梯次`;
+}
+
+// 根據資料動態渲染表格
+function renderTable() {
+  const table = document.getElementById('schedule-table');
+  let html = `
+    <tr>
+      <th style="width:48px">時段</th>
+      <th>星期一</th>
+      <th>星期二</th>
+      <th>星期三</th>
+      <th>星期四</th>
+      <th>星期五</th>
+    </tr>
+  `;
+
+  for (const week of SCHEDULE_DATA) {
+    html += `<tr class="week-header"><td colspan="6">${week.label}</td></tr>`;
+
+    // 日期列
+    html += `<tr><td class="row-label">日期</td>`;
+    for (const d of week.dates) {
+      html += `<td class="day-cell">${d.date}<br><small>（週${d.day}）</small></td>`;
+    }
+    for (let i = week.dates.length; i < 5; i++) html += `<td class="empty-cell"></td>`;
+    html += `</tr>`;
+
+    // 上午列
+    html += `<tr><td class="row-label">上午</td>`;
+    for (const d of week.dates) {
+      if (d.am.length === 0) {
+        html += `<td class="slots-cell empty-cell"></td>`;
+      } else {
+        html += `<td class="slots-cell"><div class="slots-inner">`;
+        for (const slot of d.am) html += renderSlot(slot);
+        html += `</div></td>`;
+      }
+    }
+    for (let i = week.dates.length; i < 5; i++) html += `<td class="empty-cell"></td>`;
+    html += `</tr>`;
+
+    // 下午列
+    html += `<tr><td class="row-label">下午</td>`;
+    for (const d of week.dates) {
+      if (d.pm.length === 0) {
+        html += `<td class="slots-cell empty-cell"></td>`;
+      } else {
+        html += `<td class="slots-cell"><div class="slots-inner">`;
+        for (const slot of d.pm) html += renderSlot(slot);
+        html += `</div></td>`;
+      }
+    }
+    for (let i = week.dates.length; i < 5; i++) html += `<td class="empty-cell"></td>`;
+    html += `</tr>`;
+  }
+
+  table.innerHTML = html;
+}
+
+// 根據資料庫狀態，產生每顆按鈕的 HTML
+function renderSlot(slotId) {
+  const idStr = String(slotId);
+  const owner = slotData[idStr] || '';
+  
+  let cls, clickAttr, nameDisplay;
+
+  if (owner === currentUser) {
+    // 狀態：自己選的
+    cls = 'mine';
+    clickAttr = ''; // 目前後端尚未支援取消功能，故不可點擊
+    nameDisplay = currentUser;
+  } else if (owner !== '') {
+    // 狀態：被別人選走
+    cls = 'taken';
+    clickAttr = '';
+    nameDisplay = owner;
+  } else {
+    // 狀態：無人選取
+    cls = 'available';
+    clickAttr = `onclick="bookSlot(${slotId})"`;
+    nameDisplay = '可選取';
+  }
+
+  return `
+    <button class="slot-btn ${cls}" ${clickAttr} title="${owner ? owner : '點擊選取梯次 ' + slotId}">
+      <span class="slot-number">${slotId}</span>
+      <span class="slot-name">${nameDisplay}</span>
+    </button>
+  `;
+}
+</script>
+</body>
+</html>
